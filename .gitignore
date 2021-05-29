@@ -1,2 +1,5 @@
 .env
 node_modules
+voice.html
+voice.js
+voice.css
