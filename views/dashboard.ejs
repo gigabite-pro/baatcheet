@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="preconnect" href="https://fonts.gstatic.com">
+    <link href="https://fonts.googleapis.com/css2?family=Lexend+Deca&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-+0n0xVW2eSR5OomGNYDnhzAbDsOXxcvSN1TPprVMTNDbiYZCxYbOOl7+AMvyTG2x" crossorigin="anonymous">
+    <link rel="stylesheet" href="/css/dashboard.css">
+    <title>Dashboard</title>
+</head>
+<body>
+    <nav>
+        <div>
+            <h4 class="nav-head">Baatcheet</h4>
+        </div>
+        <div class="navlinks">
+            <a>
+                <div class="nav-item">Welcome
+                     <%= user.name.split(" ")[0]%>
+                    </div>
+            </a>
+            <a href="#appointments">
+                <div class="nav-item">Appointments</div>
+            </a>
+            <a href="/logout" id="button">
+                <div class="nav-item">Logout</div>
+            </a>
+        </div>
+    </nav>
+
+    <!-- AddModal -->
+    <div class="modal fade" id="AddModal" tabindex="-1" aria-labelledby="AddModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title" id="AddModalLabel">Add Appointment</h5>
+              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form action="/add-appoint" method="POST">
+                    <div class="mt-2 mb-2">
+                        <input type="date" name="date" class="form-control" autocomplete="off" required>
+                    </div>
+                    <div class="mt-2 mb-2">
+                         <input type="time" name="time" class="form-control" required>
+                    </div>
+                    <input type="hidden" name="email" value= '<%= user.email %>'>
+                    <input type="hidden" name="name" value= '<%= user.name %>'>
+                    <div class="mt-3">
+                     <button type="submit" class="btn btn-dark
+                    ">Add</button>
+                    </div>
+                </form>
+            </div>
+          </div>
+        </div>
+      </div>
+      <!-- RequestModal -->
+      <div class="modal fade" id="RequestModal" tabindex="-1" aria-labelledby="RequestModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title" id="RequestModalLabel">Request Appointment</h5>
+              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form action="/request-appoint" method="POST">
+                    <div class="mt-2 mb-2">
+                        <input type="date" name="date" class="form-control" autocomplete="off" required>
+                    </div>
+                    <div class="mt-2 mb-2">
+                         <input type="time" name="time" class="form-control" required>
+                    </div>
+                    <input type="hidden" name="email" value= <%= user.email %>>
+                    <input type="hidden" name="name" value= <%= user.name %>>
+                    <div class="mt-3">
+                     <button type="submit" class="btn btn-dark
+                    ">Request</button>
+                    </div>
+                </form>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    <div class="container main">
+        <div class="row">
+            <div class="col-12 text-center">
+                <h1 class="dash-head">Dashboard</h1>
+            </div>
+        </div>
+        <div class="row justify-content-center">
+            <div class="col-7 mt-3">
+                <div class="box">
+                    <div class="row">
+                        <div class="col-12 text-center">
+                            <h3 class="dash-head">Profile</h3>
+                        </div>
+                    </div>
+                    <hr style="height: 0.1rem; color: black; background-color: black; opacity: 1; width: 100.1%; margin: 0px;">
+                    <div class="row">
+                        <div class="col-3 text-center pfp-box">
+                            <div class="pfp" style="background: url('<%= user.pfpUrl %>'); background-position: center; background-size: contain;"></div>
+                        </div>
+                        <div class="col-9">
+                            <div class="row mt-1">
+                                <div class="col-12">
+                                    <strong>Name</strong>
+                                    <br> 
+                                    <%- user.name %>
+                                </div>
+                                <div class="col-12 mt-1">
+                                    <strong>Email</strong>
+                                    <br> 
+                                    <%= user.email %>
+                                </div>
+                                <div class="col-12 mt-1">
+                                    <strong>Age</strong>
+                                    <br> 
+                                    <%= user.age%>
+                                </div>
+                                <div class="col-12 mt-1">
+                                    <strong>You are a</strong>
+                                    <br> 
+                                    <%= user.typeOfUser%>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row mt-5 justify-content-center">
+            <div class="col-12 text-center">
+                <h1 class="dash-head" id="appointments">My Appointments</h1>
+            </div>
+            <%if (user.typeOfUser == 'Therapist') { %>
+                <div class="col-3 mt-3 text-center">
+                    <a id="button" data-bs-toggle="modal" data-bs-target="#AddModal">Add Appointment</a>
+                </div>   
+            <% } %>
+            <div class="col-12 mt-3">
+                <table class="table table-striped">
+                    <thead>
+                      <tr>
+                        <th scope="col" colspan="1" class="text-center">S. no.</th>
+                        <th scope="col" colspan="2" class="text-center">Name</th>
+                        <th scope="col" colspan="1" class="text-center">Email</th>
+                        <th scope="col" colspan="1" class="text-center">Date</th>
+                        <th scope="col" colspan="1" class="text-center">Time</th>
+                        <th scope="col" colspan="1" class="text-center">Appointment ID</th>
+                        <th scope="col" colspan="1" class="text-center">Actions</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                        <%if (user.typeOfUser == 'Therapist') { %>
+                            <%for (let i = 0; i < user.appointments.length; i++) { %>
+                                <tr>
+                                    <th scope="row" class="text-center"><%= i+1 %></th>
+                                    <td colspan="2" class="text-center"><%= user.name %></td>
+                                    <td class="text-center"><%= user.email %></td>
+                                    <td class="text-center"><%= user.appointments[i]['date'] %></td>
+                                    <td class="text-center"><%= user.appointments[i]['time'] %></td>
+                                    <td class="text-center"><%= user.appointments[i]['code'] %></td>
+                                        <td colspan="1" class="text-center">
+                                            <a id="button" class="mx-2 tb-btn text-center">
+                                                Delete
+                                            </a>
+                                        </td>
+                                  </tr>
+                            <% } %>
+                        <% } else { %> 
+                            <%for (let i = 0; i < appointments.length; i++) { %>
+                                <%if (appointments[i].memberEmail == user.email) { %>
+                                    <tr>
+                                        <th scope="row" class="text-center"><%= i+1 %></th>
+                                        <td colspan="2" class="text-center"><%= appointments[i].ownerName %></td>
+                                        <td class="text-center"><%= appointments[i].ownerEmail %></td>
+                                        <td class="text-center"><%= appointments[i].appointmentDate %></td>
+                                        <td class="text-center"><%= appointments[i].appointmentTime %></td>
+                                        <td class="text-center"><%= appointments[i].appointmentCode %></td>
+                                            <td colspan="1" class="text-center">
+                                                <%= appointments[i].status %>
+                                            </td>
+                                      </tr>
+                                <% } %>
+                            <% } %>
+                        <% } %>
+
+                    </tbody>
+                  </table>
+            </div>
+        </div>
+        <div class="row mt-5 justify-content-center">
+            <%if (user.typeOfUser == 'Therapist') { %>
+                <div class="col-12 text-center">
+                    <h1 class="dash-head" id="appointments">Requested Appointments</h1>
+                </div>   
+            <% } else { %>
+                <div class="col-12 text-center">
+                    <h1 class="dash-head" id="appointments">All Appointments</h1>
+                </div>
+           <% } %>
+            <div class="col-12 mt-3">
+                <table class="table table-striped">
+                    <thead>
+                      <tr>
+                        <th scope="col" colspan="1" class="text-center">S. no.</th>
+                        <th scope="col" colspan="2" class="text-center">Name</th>
+                        <th scope="col" colspan="1" class="text-center">Email</th>
+                        <th scope="col" colspan="1" class="text-center">Date</th>
+                        <th scope="col" colspan="1" class="text-center">Time</th>
+                        <th scope="col" colspan="1" class="text-center">Appointment ID</th>
+                        <th scope="col" colspan="1" class="text-center">Actions</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                        <%if (user.typeOfUser == 'User') { %>
+                            <%for (let i = 0; i < appointments.length; i++) { %>
+                                <%if (appointments[i].status == 'Added') { %>
+                                    <tr>
+                                        <th scope="row" class="text-center"><%= i+1 %></th>
+                                        <td colspan="2" class="text-center"><%= appointments[i].ownerName %></td>
+                                        <td class="text-center"><%= appointments[i].ownerEmail %></td>
+                                        <td class="text-center"><%= appointments[i].appointmentDate %></td>
+                                        <td class="text-center"><%= appointments[i].appointmentTime %></td>
+                                        <td class="text-center"><%= appointments[i].appointmentCode %></td>
+                                            <td colspan="1" class="text-center">
+                                                <a href="/request/<%= appointments[i].appointmentCode %>" id="button" class="mx-2 tb-btn text-center request-btn">
+                                                    Request Meeting
+                                                </a>
+                                            </td>
+                                      </tr>
+                                <% } %>
+                            <% } %>
+                        <% } else { %> 
+                            <%for (let i = 0; i < appointments.length; i++) { %>
+                                <%if (appointments[i].ownerEmail == user.email && appointments[i].status == 'Pending') { %>
+                                    <tr>
+                                        <th scope="row" class="text-center"><%= i+1 %></th>
+                                        <td colspan="2" class="text-center"><%= appointments[i].memberName %></td>
+                                        <td class="text-center"><%= appointments[i].memberEmail %></td>
+                                        <td class="text-center"><%= appointments[i].appointmentDate %></td>
+                                        <td class="text-center"><%= appointments[i].appointmentTime %></td>
+                                        <td class="text-center"><%= appointments[i].appointmentCode %></td>
+                                            <td colspan="1" class="text-center">
+                                                <a href="/approve/<%= appointments[i].appointmentCode %>" id="button" class="mx-2 tb-btn text-center request-btn">
+                                                    Approve
+                                                </a>
+                                            </td>
+                                      </tr>
+                                <% } %>
+                            <% } %>
+                        <% } %>
+
+                    </tbody>
+                  </table>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.1/dist/js/bootstrap.bundle.min.js" integrity="sha384-gtEjrD/SeCtmISkJkNUaaKMoLD0//ElJ19smozuHV6z3Iehds+3Ulb9Bn9Plx0x4" crossorigin="anonymous"></script>
+</body>
+</html>

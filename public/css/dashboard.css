@@ -1,0 +1,89 @@
+body{
+    margin: 0;
+    padding: 0;
+    font-family: 'Lexend Deca', sans-serif;
+    scroll-behavior: smooth;
+}
+
+nav{
+    width: 100%;
+    padding: 10px 200px 10px 20px;
+    position: fixed;
+    top: 0;
+    left: 0;
+    background-color: rgb(0, 0, 0);
+    color: white;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.nav-head{
+    margin-left: 5rem;
+    margin-top: 0.3rem;
+}
+
+.navlinks{
+    display: flex;
+    list-style: none;
+}
+
+.navlinks a{
+    margin-left: 1rem;
+    text-decoration: none;
+    color: white;
+    padding: 0.4rem 1rem;
+}
+
+#button{
+    border-radius: 2px;
+    padding: 0.4rem 1rem;
+    background-color: black;
+    color: white;
+    transition-duration: 400ms;
+}
+
+#button:hover{
+    background-color: white;
+    color: black;
+    cursor: pointer;
+}
+
+.main{
+    margin-top: 7rem;
+}
+
+.dash-head{
+    font-weight: 800;
+}
+
+.box{
+    border: 2px solid black;
+    border-radius: 4px;
+}
+
+.pfp-box{
+    height: 13rem;
+    padding-top: 1rem;
+    border-right: 2px solid black;
+    padding-right: 0px;
+}
+
+.pfp{
+    width: 10rem;
+    height: 10rem;
+    margin: auto;
+    border-radius: 50%;
+    border: 3px solid black;
+    margin-top: 0.5rem;
+}
+
+a{
+    text-decoration: none;
+    color: white;
+}
+
+.tb-btn{
+    border: 1px solid black;
+    padding: 0px;
+}

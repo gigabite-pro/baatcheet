@@ -1,0 +1,36 @@
+body{
+    margin: 0;
+    padding: 0;
+    font-family: 'Lexend Deca', sans-serif;
+    background-color: black;
+}
+
+.container{
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.main{
+    background-color: white;
+    padding: 3rem;
+}
+
+#button{
+    border-radius: 2px;
+    padding: 0.4rem 1rem;
+    background-color: black;
+    transition-duration: 400ms;
+    text-decoration: none;
+    color: white;
+}
+
+#button:hover{
+    background-color: white;
+    color: black;
+}
+
+h1{
+    font-weight: 800;
+}
