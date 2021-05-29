@@ -21,7 +21,7 @@
     "ejs": "^3.1.6",
     "express": "^4.17.1",
     "express-openid-connect": "^2.4.0",
-    "google-meet-api": "^1.0.0",
+    "googleapis": "^74.2.0",
     "localStorage": "^1.0.4",
     "mongoose": "^5.12.11",
     "shortid": "^2.2.16"

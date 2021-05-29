@@ -27,7 +27,7 @@ const config = {
 
   oAuth2Client.setCredentials({refresh_token: `${process.env.REFRESH_TOKEN}`})
   
-
+  const calendar = google.calendar({ version: "v3", auth: oAuth2Client });
   
 app.set('view engine', 'ejs')
 app.set('views', path.join(__dirname, 'views'));
@@ -79,7 +79,7 @@ app.get('/details', requiresAuth(), (req,res)=>{
 });
 
 app.post('/post-info', (req,res)=>{
-    const {username , age, typeOfUser} = req.body
+    const {username , age, typeOfUser,calenId} = req.body
     const email = localStorage.getItem('email')
 
     let pfpList = ["https://cdn.discordapp.com/attachments/751511569971675216/818749306893762570/Untitled-3.png","https://cdn.discordapp.com/attachments/751511569971675216/818749761368752138/Untitled-4.png","https://cdn.discordapp.com/attachments/751511569971675216/818750283445174332/Untitled-5.png","https://cdn.discordapp.com/attachments/751511569971675216/818750816444743750/Untitled-6.png"]
@@ -96,6 +96,7 @@ app.post('/post-info', (req,res)=>{
         'appointments': appointments,
         'typeOfUser': typeOfUser,
         'pfpUrl': pfp,
+        'calenID': calenId,
     });
 
     newUser.save()
@@ -123,12 +124,13 @@ app.get('/dashboard', requiresAuth(), (req,res)=>{
 });
 
 app.post('/add-appoint', async(req,res)=>{
-    const {name, email, date, time} = req.body;
+    const {name, email, date, time, calenID} = req.body;
     const id = await shortid.generate();
 
     newAppointment = new Appointment({
         'ownerName': name,
         'ownerEmail': email,
+        'ownerCalenID': calenID,
         'appointmentCode': id,
         'appointmentDate': date,
         'appointmentTime': time,
@@ -153,14 +155,15 @@ app.post('/add-appoint', async(req,res)=>{
 
 app.get('/:type/:code', requiresAuth(),(req,res)=>{
     const email = req.oidc.user.email
+    User.findOne
     Appointment.findOne({appointmentCode: req.params.code})
     .then(doc=>{
         if(req.params.type == 'request'){
             res.render('request',{owner:doc, memberEmail: email})
         }else if(req.params.type == 'approve'){
-            res.render('approve',{owner:doc, memberEmail: email})
+            res.render('approve',{owner:doc})
         }else if(req.params.type == 'delete'){
-            res.render('delete',{owner:doc, memberEmail: email})
+            res.render('delete',{owner:doc})
         }
     })
     .catch(err=>console.log(err))
@@ -210,16 +213,29 @@ app.post('/request-appoint',(req,res)=>{
 });
 
 app.post('/approve-appoint', (req,res)=>{
-    const{appointmentCode, memberEmail, ownerEmail, date, time} = req.body 
+    const{appointmentCode, memberEmail, ownerEmail, date, time, calenID} = req.body 
 
-    Meeting({
-        clientId : `${process.env.G_CLIENT_ID}`,
-        clientSecret : `${process.env.G_CLIENT_SECRET}`,
-        refreshToken: `${process.env.REFRESH_TOKEN}`,
-        date : `${date}`,
-        time : `${time}`,
-        description : 'Baatcheet Meeting'
-        }).then(function(link){
+    const resource = {
+        start: { dateTime: `${date}T${time}:00.000+05:30`},
+        end: { dateTime: `${date}T${time}:00.000+03:30` },
+        attendees: [{ email: memberEmail},{email: ownerEmail}],
+        conferenceData: {
+          createRequest: {
+            requestId: appointmentCode.toString(),
+            conferenceSolutionKey: { type: "hangoutsMeet" },
+          },
+        },
+        summary: "Baatcheet Meeting",
+        description: `Appointment with ${memberEmail}`,
+      };
+      calendar.events
+        .insert({
+          calendarId: calenID,
+          resource: resource,
+          conferenceDataVersion: 1,
+        })
+        .then((data)=>{
+            const link = data.data.hangoutLink
             User.findOne({email:memberEmail})
             .then(user=>{
                 if(user){
@@ -257,6 +273,9 @@ app.post('/approve-appoint', (req,res)=>{
                     console.log('User not found')
                 }
             }).catch(err=>console.log(err)) 
+        }) 
+        .catch((errs)=>{
+            console.log(errs)
         });
 
 });

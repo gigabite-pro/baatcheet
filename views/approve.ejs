@@ -6,8 +6,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link href="https://fonts.googleapis.com/css2?family=Lexend+Deca&display=swap" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-+0n0xVW2eSR5OomGNYDnhzAbDsOXxcvSN1TPprVMTNDbiYZCxYbOOl7+AMvyTG2x" crossorigin="anonymous">
+    <link rel="shortcut icon" href="/assets/icon.jpg">
     <link rel="stylesheet" href="/css/verification.css">
-    <title>Details</title>
+    <title>Baatcheet - Approve</title>
 </head>
 <body>
     <div class="container">
@@ -32,10 +33,11 @@
                         <br>
                        <form action="/approve-appoint" method="POST">
                                 <input type="hidden" name="appointmentCode" value= '<%= owner.appointmentCode  %>'>
-                                <input type="hidden" name="memberEmail" value='<%= memberEmail %>'>
+                                <input type="hidden" name="memberEmail" value='<%= owner.memberEmail %>'>
                                 <input type="hidden" name="ownerEmail" value='<%= owner.ownerEmail  %>'>
                                 <input type="hidden" name="date" value='<%= owner.appointmentDate  %>'>
                                 <input type="hidden" name="time" value='<%= owner.appointmentTime  %>'>
+                                <input type="hidden" name="calenID" value='<%= owner.ownerCalenID  %>'>
                            <div class="mt-2">
                                 <button type="submit" class="btn btn-dark">Approve</button>
                            </div>
