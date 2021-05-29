@@ -41,6 +41,7 @@ nav{
     padding: 0.4rem 1rem;
     background-color: black;
     color: white;
+    border: 1px solid black;
     transition-duration: 400ms;
 }
 

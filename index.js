@@ -3,6 +3,9 @@ const mongoose = require('mongoose');
 const path = require('path');
 const localStorage = require('localStorage');
 const shortid = require('shortid');
+// const Meeting = require('google-meet-api').meet;
+const {google} = require('googleapis');
+const {OAuth2} = google.auth
 const User = require('./models/User');
 const Appointment = require('./models/Appointment')
 const app = express();
@@ -17,6 +20,14 @@ const config = {
     issuerBaseURL: process.env.ISSUER_BASE_URL,
     secret: process.env.SECRET,
   };
+
+  const oAuth2Client = new OAuth2(
+      `${process.env.G_CLIENT_ID}`, `${process.env.G_CLIENT_SECRET}`
+  );
+
+  oAuth2Client.setCredentials({refresh_token: `${process.env.REFRESH_TOKEN}`})
+  
+
   
 app.set('view engine', 'ejs')
 app.set('views', path.join(__dirname, 'views'));
@@ -47,7 +58,7 @@ app.get('/', (req, res) => {
 app.get('/verify', requiresAuth(), (req,res)=>{
     var response = req.oidc.user
     if(response.email_verified == false){
-        res.render('verification')
+        res.render('verification',{email: response.email})
     }else{
         res.redirect('/details')
     }
@@ -121,12 +132,13 @@ app.post('/add-appoint', async(req,res)=>{
         'appointmentCode': id,
         'appointmentDate': date,
         'appointmentTime': time,
+        'link': 'Not Approved Yet',
         'status': 'Added'
     })
 
     newAppointment.save()
     .then(()=>{
-        const newApp = {'date': date, 'time': time, 'code': id, 'status':'Added'}
+        const newApp = {'date': date, 'time': time, 'code': id, 'status':'Added', 'link':'Not Approved Yet'}
 
         User.updateOne({email},{
             "$push" : {
@@ -139,11 +151,17 @@ app.post('/add-appoint', async(req,res)=>{
 
 });
 
-app.get('/request/:code', requiresAuth(),(req,res)=>{
+app.get('/:type/:code', requiresAuth(),(req,res)=>{
     const email = req.oidc.user.email
     Appointment.findOne({appointmentCode: req.params.code})
     .then(doc=>{
-        res.render('request',{owner:doc, memberEmail: email})
+        if(req.params.type == 'request'){
+            res.render('request',{owner:doc, memberEmail: email})
+        }else if(req.params.type == 'approve'){
+            res.render('approve',{owner:doc, memberEmail: email})
+        }else if(req.params.type == 'delete'){
+            res.render('delete',{owner:doc, memberEmail: email})
+        }
     })
     .catch(err=>console.log(err))
 });
@@ -162,8 +180,7 @@ app.post('/request-appoint',(req,res)=>{
                 }
             })
             .then(()=>{
-                User.findOne({email:ownerEmail},{
-                })
+                User.findOne({email:ownerEmail})
                 .then((doc)=>{
                     let newOwnerAppointments = doc.appointments
                     if(doc){
@@ -176,14 +193,7 @@ app.post('/request-appoint',(req,res)=>{
                                     }
                                 })
                                 .then(()=>{
-                                    User.updateOne({email: user.email},{
-                                        $set : {
-                                            appointments: newOwnerAppointments
-                                        }
-                                    })
-                                    .then(()=>{
-                                        res.redirect('/dashboard')
-                                    }).catch(err=>console.log(err))
+                                    res.redirect('/dashboard')
                                 })
                                 .catch(err=>console.log(err))
                             }
@@ -197,8 +207,99 @@ app.post('/request-appoint',(req,res)=>{
         }
     }).catch(err=>console.log(err))
     
-})
+});
 
+app.post('/approve-appoint', (req,res)=>{
+    const{appointmentCode, memberEmail, ownerEmail, date, time} = req.body 
+
+    Meeting({
+        clientId : `${process.env.G_CLIENT_ID}`,
+        clientSecret : `${process.env.G_CLIENT_SECRET}`,
+        refreshToken: `${process.env.REFRESH_TOKEN}`,
+        date : `${date}`,
+        time : `${time}`,
+        description : 'Baatcheet Meeting'
+        }).then(function(link){
+            User.findOne({email:memberEmail})
+            .then(user=>{
+                if(user){
+                    Appointment.updateOne({appointmentCode:appointmentCode},{
+                        $set : {
+                            'link': link,
+                            'status': 'Approved'
+                        }
+                    })
+                    .then(()=>{
+                        User.findOne({email:ownerEmail})
+                        .then((doc)=>{
+                            let newOwnerAppointments = doc.appointments
+                            if(doc){
+                                for(let i=0; i< doc.appointments.length; i++){
+                                    if(doc.appointments[i].code == appointmentCode){
+                                        newOwnerAppointments[i]['status'] = 'Approved'
+                                        newOwnerAppointments[i]['link'] = link
+                                        User.updateOne({email:ownerEmail},{
+                                            $set : {
+                                                appointments: newOwnerAppointments
+                                            }
+                                        })
+                                        .then(()=>{
+                                            res.redirect('/dashboard')
+                                        })
+                                        .catch(err=>console.log(err))
+                                    }
+                                }
+                            }
+                        })
+                        .catch(err=>console.log(err))
+                    }).catch(err=>console.log(err))
+                }else{
+                    console.log('User not found')
+                }
+            }).catch(err=>console.log(err)) 
+        });
+
+});
+
+app.post('/delete-appoint',(req,res)=>{
+    const{appointmentCode, memberEmail, ownerEmail} = req.body 
+
+    User.findOne({email:memberEmail})
+    .then(user=>{
+        if(user){
+            Appointment.findOneAndRemove({appointmentCode:appointmentCode},{
+            })
+            .then(()=>{
+                User.findOne({email:ownerEmail})
+                .then((doc)=>{
+                    let newOwnerAppointments = doc.appointments
+                    if(doc){
+                        for(let i=0; i< doc.appointments.length; i++){
+                            if(doc.appointments[i].code == appointmentCode){
+                                if (i > -1) {
+                                    newOwnerAppointments.splice(i, 1);
+                                }
+                                User.updateOne({email:ownerEmail},{
+                                    $set : {
+                                        appointments: newOwnerAppointments
+                                    }
+                                })
+                                .then(()=>{
+                                    res.redirect('/dashboard')
+                                })
+                                .catch(err=>console.log(err))
+                            }
+                        }
+                    }
+                })
+                .catch(err=>console.log(err))
+            }).catch(err=>console.log(err))
+        }else{
+            console.log('User not found')
+        }
+    }).catch(err=>console.log(err))
+    
+});
 
 
 const port = process.env.PORT || 3000

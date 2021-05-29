@@ -39,6 +39,7 @@ nav{
     border-radius: 2px;
     padding: 0.4rem 1rem;
     background-color: black;
+    border: 1px solid black;
     color: white;
     transition-duration: 400ms;
 }

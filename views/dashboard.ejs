@@ -57,33 +57,6 @@
           </div>
         </div>
       </div>
-      <!-- RequestModal -->
-      <div class="modal fade" id="RequestModal" tabindex="-1" aria-labelledby="RequestModalLabel" aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered">
-          <div class="modal-content">
-            <div class="modal-header">
-              <h5 class="modal-title" id="RequestModalLabel">Request Appointment</h5>
-              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body">
-                <form action="/request-appoint" method="POST">
-                    <div class="mt-2 mb-2">
-                        <input type="date" name="date" class="form-control" autocomplete="off" required>
-                    </div>
-                    <div class="mt-2 mb-2">
-                         <input type="time" name="time" class="form-control" required>
-                    </div>
-                    <input type="hidden" name="email" value= <%= user.email %>>
-                    <input type="hidden" name="name" value= <%= user.name %>>
-                    <div class="mt-3">
-                     <button type="submit" class="btn btn-dark
-                    ">Request</button>
-                    </div>
-                </form>
-            </div>
-          </div>
-        </div>
-      </div>
 
     <div class="container main">
         <div class="row">
@@ -157,7 +130,8 @@
                     <tbody>
                         <%if (user.typeOfUser == 'Therapist') { %>
                             <%for (let i = 0; i < user.appointments.length; i++) { %>
-                                <tr>
+                                <%if (user.appointments.length != 0) { %>
+                                   <tr>
                                     <th scope="row" class="text-center"><%= i+1 %></th>
                                     <td colspan="2" class="text-center"><%= user.name %></td>
                                     <td class="text-center"><%= user.email %></td>
@@ -165,11 +139,12 @@
                                     <td class="text-center"><%= user.appointments[i]['time'] %></td>
                                     <td class="text-center"><%= user.appointments[i]['code'] %></td>
                                         <td colspan="1" class="text-center">
-                                            <a id="button" class="mx-2 tb-btn text-center">
+                                            <a href="/delete/<%= appointments[i].appointmentCode %>" id="button" class="mx-2 tb-btn text-center">
                                                 Delete
                                             </a>
                                         </td>
-                                  </tr>
+                                  </tr> 
+                               <% } %>
                             <% } %>
                         <% } else { %> 
                             <%for (let i = 0; i < appointments.length; i++) { %>
@@ -181,9 +156,17 @@
                                         <td class="text-center"><%= appointments[i].appointmentDate %></td>
                                         <td class="text-center"><%= appointments[i].appointmentTime %></td>
                                         <td class="text-center"><%= appointments[i].appointmentCode %></td>
+                                        <%if (appointments[i].status == 'Pending') { %>
                                             <td colspan="1" class="text-center">
                                                 <%= appointments[i].status %>
-                                            </td>
+                                            </td>  
+                                        <% } else { %>
+                                            <td colspan="1" class="text-center">
+                                                <a href='<%= appointments[i].link %>' target="_blank" id="button" class="mx-2 tb-btn text-center request-btn">
+                                                    Join
+                                            </a>
+                                            </td>  
+                                        <% } %>
                                       </tr>
                                 <% } %>
                             <% } %>
@@ -248,6 +231,21 @@
                                             <td colspan="1" class="text-center">
                                                 <a href="/approve/<%= appointments[i].appointmentCode %>" id="button" class="mx-2 tb-btn text-center request-btn">
                                                     Approve
+                                                </a>
+                                            </td>
+                                      </tr>
+                                <% } %>
+                                <%if (appointments[i].ownerEmail == user.email && appointments[i].status == 'Approved') { %>
+                                    <tr>
+                                        <th scope="row" class="text-center"><%= i+1 %></th>
+                                        <td colspan="2" class="text-center"><%= appointments[i].memberName %></td>
+                                        <td class="text-center"><%= appointments[i].memberEmail %></td>
+                                        <td class="text-center"><%= appointments[i].appointmentDate %></td>
+                                        <td class="text-center"><%= appointments[i].appointmentTime %></td>
+                                        <td class="text-center"><%= appointments[i].appointmentCode %></td>
+                                            <td colspan="1" class="text-center">
+                                                <a href='<%= appointments[i].link %>' target="_blank" id="button" class="mx-2 tb-btn text-center request-btn">
+                                                    Join
                                                 </a>
                                             </td>
                                       </tr>

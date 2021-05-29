@@ -23,6 +23,7 @@ body{
     background-color: black;
     transition-duration: 400ms;
     text-decoration: none;
+    border: 1px solid black;
     color: white;
 }
 

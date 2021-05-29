@@ -15,7 +15,7 @@
             <div class="main">
                 <div class="row">
                     <div class="col-12 text-center mt-4">
-                        <h1>Request Appointment</h1>
+                        <h1>Delete Appointment</h1>
                     </div>
                 </div>
                 <div class="row justify-content-center mt-3">
@@ -29,15 +29,13 @@
                         <strong>Appointment Time:</strong> <%= owner.appointmentTime  %>
                         <br>
                         <strong>Appointment Code:</strong> <%= owner.appointmentCode  %>
-                        <br>
-                        <strong>Your Email:</strong> <%= memberEmail  %>
-                       <form action="/request-appoint" method="POST">
-                                <input type="hidden" name="appointmentCode" class="form-control" id="appointmentCode" value= '<%= owner.appointmentCode  %>' autocomplete="off">
-                                <input type="hidden" name="memberEmail" id="memberEmail" class="form-control" autocomplete="off" value='<%= memberEmail %>'>
-                           <input type="hidden" name="ownerEmail" value='<%= owner.ownerEmail  %>'>
+                       <form action="/delete-appoint" method="POST">
+                                <input type="hidden" name="appointmentCode" value= '<%= owner.appointmentCode  %>'>
+                                <input type="hidden" name="memberEmail" value='<%= memberEmail %>'>
+                                <input type="hidden" name="ownerEmail" value='<%= owner.ownerEmail  %>'>
                            <div class="mt-2">
                             <button type="submit" class="btn btn-dark
-                           ">Request</button>
+                           ">Delete</button>
                            </div>
                        </form>
                     </div>

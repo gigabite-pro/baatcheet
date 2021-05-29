@@ -31,6 +31,9 @@ const appointmentSchema = new mongoose.Schema({
     memberEmail: {
         type: String,
     },
+    link: {
+        type: String,
+    },
     date: {
         type: Date,
         default: Date.now
