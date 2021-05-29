@@ -232,7 +232,7 @@ app.post('/approve-appoint', (req,res)=>{
         .insert({
           calendarId: calenID,
           resource: resource,
-          conferenceDataVersion: 1,
+          conferenceDataVersion: 0,
         })
         .then((data)=>{
             const link = data.data.hangoutLink
