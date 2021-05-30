@@ -54,6 +54,9 @@ app.get('/', (req, res) => {
     }
 });
 
+app.get('/chillzone', (req,res)=>{
+    res.render('voice.ejs')
+})
 
 app.get('/verify', requiresAuth(), (req,res)=>{
     var response = req.oidc.user
