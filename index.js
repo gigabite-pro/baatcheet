@@ -3,7 +3,6 @@ const mongoose = require('mongoose');
 const path = require('path');
 const localStorage = require('localStorage');
 const shortid = require('shortid');
-const axios = require('axios')
 const {google} = require('googleapis');
 const {OAuth2} = google.auth
 const User = require('./models/User');
