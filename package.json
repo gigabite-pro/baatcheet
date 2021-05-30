@@ -8,14 +8,14 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/gigabite-pro/hackon.git"
+    "url": "git+https://github.com/gigabite-pro/baatcheet.git"
   },
   "author": "chin2",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/gigabite-pro/hackon/issues"
+    "url": "https://github.com/gigabite-pro/baatcheet/issues"
   },
-  "homepage": "https://github.com/gigabite-pro/hackon#readme",
+  "homepage": "https://github.com/gigabite-pro/baatcheet#readme",
   "dependencies": {
     "dotenv": "^10.0.0",
     "ejs": "^3.1.6",
