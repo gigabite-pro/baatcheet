@@ -82,7 +82,7 @@ app.get('/details', requiresAuth(), (req,res)=>{
 });
 
 app.post('/post-info', (req,res)=>{
-    const {username , age, typeOfUser,calenId} = req.body
+    const {username , age, typeOfUser} = req.body
     const email = localStorage.getItem('email')
 
     let pfpList = ["https://cdn.discordapp.com/attachments/751511569971675216/818749306893762570/Untitled-3.png","https://cdn.discordapp.com/attachments/751511569971675216/818749761368752138/Untitled-4.png","https://cdn.discordapp.com/attachments/751511569971675216/818750283445174332/Untitled-5.png","https://cdn.discordapp.com/attachments/751511569971675216/818750816444743750/Untitled-6.png"]
@@ -99,7 +99,6 @@ app.post('/post-info', (req,res)=>{
         'appointments': appointments,
         'typeOfUser': typeOfUser,
         'pfpUrl': pfp,
-        'calenID': calenId,
     });
 
     newUser.save()
@@ -127,13 +126,12 @@ app.get('/dashboard', requiresAuth(), (req,res)=>{
 });
 
 app.post('/add-appoint', async(req,res)=>{
-    const {name, email, date, time, calenID} = req.body;
+    const {name, email, date, time} = req.body;
     const id = await shortid.generate();
 
     newAppointment = new Appointment({
         'ownerName': name,
         'ownerEmail': email,
-        'ownerCalenID': calenID,
         'appointmentCode': id,
         'appointmentDate': date,
         'appointmentTime': time,
@@ -216,7 +214,7 @@ app.post('/request-appoint',(req,res)=>{
 });
 
 app.post('/approve-appoint', (req,res)=>{
-    const{appointmentCode, memberEmail, ownerEmail, date, time, calenID} = req.body 
+    const{appointmentCode, memberEmail, ownerEmail, date, time} = req.body 
 
     const resource = {
         start: { dateTime: `${date}T${time}:00.000+05:30`},

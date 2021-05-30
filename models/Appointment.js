@@ -9,10 +9,6 @@ const appointmentSchema = new mongoose.Schema({
         type: String,
         required: true,
     },
-    ownerCalenID: {
-        type: String,
-        required: true,
-    },
     appointmentCode: {
         type: String,
         required: true,
